@@ -24,6 +24,619 @@ class _CalendarBaseState extends State<CalenderBase> {
   Map<int, List<CalenderData>> map;
   int _counter = 0;
 
+  Widget returnPage(int page) {
+    DateTime first = _now.subtract(Duration(days: _now.day - 1)); //今の月の初めの日
+    DateTime nextMonth = _1st.add(Duration(days: 40)); //次の月のいずれかの日
+    DateTime beforeEnd = _1st.subtract(Duration(days: _1st.day)); //前の月の最後の日
+    DateTime beginDay =
+        _1st.subtract(Duration(days: _1st.weekday - 1)); //カレンダーの最初の日
+    if (page < 0) {
+      first = _beforeEnd.subtract(Duration(days: _beforeEnd.day - 1));
+      beforeEnd = first.subtract(Duration(days: first.day));
+      beginDay = first.subtract(Duration(days: first.weekday - 1));
+      nextMonth = first.add(Duration(days: 31));
+      for (int i = 0; i < page * (-1) - 1; i++) {
+        first = beforeEnd.subtract(Duration(days: beforeEnd.day - 1));
+        beforeEnd = first.subtract(Duration(days: first.day));
+        beginDay = first.subtract(Duration(days: first.weekday - 1));
+        nextMonth = first.add(Duration(days: 31));
+      }
+    }
+    if (page > 0) {
+      first = _nextMonth.subtract(Duration(days: _nextMonth.day - 1));
+      nextMonth = first.add(Duration(days: 31));
+      beginDay = first.subtract(Duration(days: first.weekday - 1));
+      beforeEnd = first.subtract(Duration(days: first.day));
+      for (int i = 0; i < page - 1; i++) {
+        first = nextMonth.subtract(Duration(days: nextMonth.day - 1));
+        nextMonth = first.add(Duration(days: 31));
+        beginDay = first.subtract(Duration(days: first.weekday - 1));
+        beforeEnd = first.subtract(Duration(days: first.day));
+      }
+    }
+    //selected=first.add(Duration(days: _now.day-1));
+    Color color;
+    Color backcolor;
+    Color circlecolor;
+    Color selectedcolor = Color(0xFFA0C6F2);
+    final List _listweek = ['日', '月', '火', '水', '木', '金', '土', '日'];
+    final List _listmonth = [
+      'Jan', //uary',
+      'Feb', //ruary',
+      'Mar', //ch',
+      'Apr', //il'
+      'May',
+      'Jun', //e',
+      'Jul', //y',
+      'Aug', //ust',
+      'Sep', //tember',
+      'Oct', //ober',
+      'Nov', //ember',
+      'Dec', //ember'
+    ];
+    return Column(children: <Widget>[
+      Padding(
+          padding: EdgeInsets.only(bottom: 3),
+          child: SizedBox(
+              height: 25,
+              child: GridView.count(
+                  crossAxisCount: 7,
+                  children: List.generate(7, (index) {
+                    return Container(
+                      color: Colors.white,
+                      child: Text(
+                        _listweek[index],
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 10,
+                        ),
+                      ),
+                    );
+                  })))),
+      if ((beginDay.add(Duration(days: 35))).month != first.month)
+        Padding(
+            padding: EdgeInsets.only(right: 2, left: 2),
+            child: SizedBox(
+                height: 450,
+                child: GridView.count(
+                    crossAxisCount: 7,
+                    mainAxisSpacing: 3,
+                    crossAxisSpacing: 3.0,
+                    // 縦スペース
+                    // 横スペース
+                    childAspectRatio: 53 / 84,
+                    children: List.generate(35, (index) {
+                      final thisDay = beginDay.add(Duration(days: index - 1));
+                      if (thisDay.month !=
+                          (beginDay.add(Duration(days: 7))).month) {
+                        color = Colors.grey;
+                      } else {
+                        color = Colors.black;
+                      }
+                      if (_now == thisDay) {
+                        circlecolor = Color(0xFFA0C6F2);
+                        color = Colors.white;
+                        backcolor = Colors.white;
+                        if (selected == thisDay)
+                          selectedcolor = Color(0xFFA0C6F2);
+                        else
+                          selectedcolor = Colors.white;
+                      } else {
+                        circlecolor = Colors.white;
+                        if (selected == thisDay)
+                          selectedcolor = Color(0xFFA0C6F2);
+                        else
+                          selectedcolor = Colors.white;
+                      }
+                      backcolor = Colors.white;
+                      if (thisDay.day < 10) {
+                        if (thisDay.month !=
+                            (beginDay.add(Duration(days: 7))).month) {
+                          return Container(
+                              decoration: BoxDecoration(
+                                color: backcolor,
+                                border: Border.all(color: selectedcolor),
+                                borderRadius: BorderRadius.circular(0),
+                              ),
+                              child: Hero(
+                                  tag: thisDay.toString(),
+                                  child: InkWell(
+                                    child: Align(
+                                      alignment: Alignment.topCenter,
+                                      child: Stack(children: <Widget>[
+                                        Container(
+                                            width: 24,
+                                            height: 24,
+                                            child: MaterialButton(
+                                              elevation: 0,
+                                              shape: CircleBorder(
+                                                  side: BorderSide(
+                                                      color: circlecolor,
+                                                      style:
+                                                          BorderStyle.solid)),
+                                              color: circlecolor,
+                                              onPressed: () {},
+                                            )),
+                                        Positioned(
+                                          child: Container(
+                                            child: Text(
+                                              '  ${thisDay.day}',
+                                              style: TextStyle(color: color),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
+                                        ),
+                                      ]),
+                                    ),
+                                    onTap: () {
+                                      setState(() {
+                                        selected = thisDay;
+                                      });
+                                    },
+                                  )));
+                        } else {
+                          if (map[thisDay.day] != null) {
+                            List<CalenderData> list = map[thisDay.day];
+                            return Container(
+                                decoration: BoxDecoration(
+                                  color: backcolor,
+                                  border: Border.all(color: selectedcolor),
+                                  borderRadius: BorderRadius.circular(0),
+                                ),
+                                child: Hero(
+                                    tag: thisDay.toString(),
+                                    child: InkWell(
+                                      child: Align(
+                                          alignment: Alignment.topCenter,
+                                          child: Column(
+                                            children: <Widget>[
+                                              Stack(children: <Widget>[
+                                                Container(
+                                                    width: 24,
+                                                    height: 24,
+                                                    child: MaterialButton(
+                                                      elevation: 0,
+                                                      shape: CircleBorder(
+                                                          side: BorderSide(
+                                                              color:
+                                                                  circlecolor,
+                                                              style: BorderStyle
+                                                                  .solid)),
+                                                      color: circlecolor,
+                                                      onPressed: () {},
+                                                    )),
+                                                Positioned(
+                                                  child: Container(
+                                                    child: Text(
+                                                      '  ${thisDay.day}',
+                                                      style: TextStyle(
+                                                          color: color),
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ]),
+                                              Container(
+                                                  child: Expanded(
+                                                      child: ListView.builder(
+                                                itemCount: list.length,
+                                                itemBuilder:
+                                                    (BuildContext context,
+                                                        int plans) {
+                                                  return Container(
+                                                    color: chageColor(
+                                                        list[plans].color),
+                                                    child:
+                                                        Text(list[plans].plan),
+                                                  );
+                                                },
+                                              )))
+                                            ],
+                                          )),
+                                      onTap: () {
+                                        setState(() {
+                                          selected = thisDay;
+                                        });
+                                      },
+                                    )));
+                          } else {
+                            return Container(
+                                decoration: BoxDecoration(
+                                  color: backcolor,
+                                  border: Border.all(color: selectedcolor),
+                                  borderRadius: BorderRadius.circular(0),
+                                ),
+                                child: Hero(
+                                    tag: thisDay.toString(),
+                                    child: InkWell(
+                                      child: Align(
+                                        alignment: Alignment.topCenter,
+                                        child: Stack(children: <Widget>[
+                                          Container(
+                                              width: 24,
+                                              height: 24,
+                                              child: MaterialButton(
+                                                elevation: 0,
+                                                shape: CircleBorder(
+                                                    side: BorderSide(
+                                                        color: circlecolor,
+                                                        style:
+                                                            BorderStyle.solid)),
+                                                color: circlecolor,
+                                                onPressed: () {},
+                                              )),
+                                          Positioned(
+                                            child: Container(
+                                              child: Text(
+                                                '  ${thisDay.day}',
+                                                style: TextStyle(color: color),
+                                                textAlign: TextAlign.center,
+                                              ),
+                                            ),
+                                          ),
+                                        ]),
+                                      ),
+                                      onTap: () {
+                                        setState(() {
+                                          selected = thisDay;
+                                        });
+                                      },
+                                    )));
+                          }
+                        }
+                      } else
+                        return Container(
+                            decoration: BoxDecoration(
+                              color: backcolor,
+                              border: Border.all(color: selectedcolor),
+                              borderRadius: BorderRadius.circular(0),
+                            ),
+                            child: Hero(
+                                tag: thisDay.toString(),
+                                child: InkWell(
+                                  child: Align(
+                                    alignment: Alignment.topCenter,
+                                    child: Stack(children: <Widget>[
+                                      Container(
+                                          width: 24,
+                                          height: 24,
+                                          child: MaterialButton(
+                                            elevation: 0,
+                                            shape: CircleBorder(
+                                                side: BorderSide(
+                                                    color: circlecolor,
+                                                    style: BorderStyle.solid)),
+                                            color: circlecolor,
+                                            onPressed: () {},
+                                          )),
+                                      Positioned(
+                                        child: Container(
+                                          child: Text(
+                                            ' ${thisDay.day}',
+                                            style: TextStyle(color: color),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ),
+                                      ),
+                                    ]),
+                                  ),
+                                  onTap: () {
+                                    setState(() {
+                                      selected = thisDay;
+                                    });
+                                  },
+                                )));
+                    }))))
+      else
+        Padding(
+            padding: EdgeInsets.only(right: 2, left: 2),
+            child: SizedBox(
+                height: 450,
+                child: GridView.count(
+                    crossAxisCount: 7,
+                    mainAxisSpacing: 3,
+                    crossAxisSpacing: 3,
+                    padding: EdgeInsets.only(right: 5, left: 5),
+                    childAspectRatio: 62 / 84,
+                    children: List.generate(42, (index) {
+                      final thisDay = beginDay.add(Duration(days: index));
+                      if (thisDay.month !=
+                          (beginDay.add(Duration(days: 7))).month) {
+                        color = Colors.grey;
+                      } else {
+                        color = Colors.black;
+                      }
+                      if (_now == thisDay) {
+                        circlecolor = Color(0xFFA0C6F2);
+                        color = Colors.white;
+                        backcolor = Colors.white;
+                        if (selected == thisDay)
+                          selectedcolor = Color(0xFFA0C6F2);
+                        else
+                          selectedcolor = Colors.white;
+                      } else {
+                        circlecolor = Colors.white;
+                        if (selected == thisDay)
+                          selectedcolor = Color(0xFFA0C6F2);
+                        else
+                          selectedcolor = Colors.white;
+                      }
+                      backcolor = Colors.white;
+                      if (thisDay.day < 10) {
+                        if (thisDay.month !=
+                            (beginDay.add(Duration(days: 7))).month) {
+                          return Container(
+                              decoration: BoxDecoration(
+                                color: backcolor,
+                                border: Border.all(color: selectedcolor),
+                                borderRadius: BorderRadius.circular(0),
+                              ),
+                              child: Hero(
+                                  tag: thisDay.toString(),
+                                  child: InkWell(
+                                    child: Align(
+                                      alignment: Alignment.topCenter,
+                                      child: Stack(children: <Widget>[
+                                        Container(
+                                            width: 24,
+                                            height: 24,
+                                            child: MaterialButton(
+                                              elevation: 0,
+                                              shape: CircleBorder(
+                                                  side: BorderSide(
+                                                      color: circlecolor,
+                                                      style:
+                                                          BorderStyle.solid)),
+                                              color: circlecolor,
+                                              onPressed: () {},
+                                            )),
+                                        Positioned(
+                                          child: Container(
+                                            child: Text(
+                                              '  ${thisDay.day}',
+                                              style: TextStyle(color: color),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
+                                        ),
+                                      ]),
+                                    ),
+                                    onTap: () {
+                                      setState(() {
+                                        selected = thisDay;
+                                      });
+                                    },
+                                  )));
+                        } else {
+                          if (map[thisDay.day] != null) {
+                            List<CalenderData> list = map[thisDay.day];
+                            return Container(
+                                decoration: BoxDecoration(
+                                  color: backcolor,
+                                  border: Border.all(color: selectedcolor),
+                                  borderRadius: BorderRadius.circular(0),
+                                ),
+                                child: Hero(
+                                    tag: thisDay.toString(),
+                                    child: InkWell(
+                                      child: Align(
+                                          alignment: Alignment.topCenter,
+                                          child: Column(
+                                            children: <Widget>[
+                                              Stack(children: <Widget>[
+                                                Container(
+                                                    width: 24,
+                                                    height: 24,
+                                                    child: MaterialButton(
+                                                      elevation: 0,
+                                                      shape: CircleBorder(
+                                                          side: BorderSide(
+                                                              color:
+                                                                  circlecolor,
+                                                              style: BorderStyle
+                                                                  .solid)),
+                                                      color: circlecolor,
+                                                      onPressed: () {},
+                                                    )),
+                                                Positioned(
+                                                  child: Container(
+                                                    child: Text(
+                                                      '  ${thisDay.day}',
+                                                      style: TextStyle(
+                                                          color: color),
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ]),
+                                              Container(
+                                                  child: ListView.builder(
+                                                itemCount: list.length,
+                                                itemBuilder:
+                                                    (BuildContext context,
+                                                        int plans) {
+                                                  return Container(
+                                                      color: chageColor(
+                                                          list[plans].color),
+                                                      child: Text(
+                                                          list[plans].plan));
+                                                },
+                                              ))
+                                            ],
+                                          )),
+                                      onTap: () {
+                                        setState(() {
+                                          selected = thisDay;
+                                        });
+                                      },
+                                    )));
+                          } else {
+                            return Container(
+                                decoration: BoxDecoration(
+                                  color: backcolor,
+                                  border: Border.all(color: selectedcolor),
+                                  borderRadius: BorderRadius.circular(0),
+                                ),
+                                child: Hero(
+                                    tag: thisDay.toString(),
+                                    child: InkWell(
+                                      child: Align(
+                                        alignment: Alignment.topCenter,
+                                        child: Stack(children: <Widget>[
+                                          Container(
+                                              width: 24,
+                                              height: 24,
+                                              child: MaterialButton(
+                                                elevation: 0,
+                                                shape: CircleBorder(
+                                                    side: BorderSide(
+                                                        color: circlecolor,
+                                                        style:
+                                                            BorderStyle.solid)),
+                                                color: circlecolor,
+                                                onPressed: () {},
+                                              )),
+                                          Positioned(
+                                            child: Container(
+                                              child: Text(
+                                                '  ${thisDay.day}',
+                                                style: TextStyle(color: color),
+                                                textAlign: TextAlign.center,
+                                              ),
+                                            ),
+                                          ),
+                                        ]),
+                                      ),
+                                      onTap: () {
+                                        setState(() {
+                                          selected = thisDay;
+                                        });
+                                      },
+                                    )));
+                          }
+                        }
+                      } else if (map[thisDay.day] == null) {
+                        return Container(
+                            decoration: BoxDecoration(
+                              color: backcolor,
+                              border: Border.all(color: selectedcolor),
+                              borderRadius: BorderRadius.circular(0),
+                            ),
+                            child: Hero(
+                                tag: thisDay.toString(),
+                                child: InkWell(
+                                  child: Align(
+                                    alignment: Alignment.topCenter,
+                                    child: Stack(children: <Widget>[
+                                      Container(
+                                          width: 24,
+                                          height: 24,
+                                          child: MaterialButton(
+                                            elevation: 0,
+                                            shape: CircleBorder(
+                                                side: BorderSide(
+                                                    color: circlecolor,
+                                                    style: BorderStyle.solid)),
+                                            color: circlecolor,
+                                            onPressed: () {},
+                                          )),
+                                      Positioned(
+                                        child: Container(
+                                          child: Text(
+                                            ' ${thisDay.day}',
+                                            style: TextStyle(color: color),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ),
+                                      ),
+                                    ]),
+                                  ),
+                                  onTap: () {
+                                    setState(() {
+                                      selected = thisDay;
+                                    });
+                                  },
+                                )));
+                      } else {
+                        List<CalenderData> list = map[thisDay.day];
+                        return Container(
+                            decoration: BoxDecoration(
+                              color: backcolor,
+                              border: Border.all(color: selectedcolor),
+                              borderRadius: BorderRadius.circular(0),
+                            ),
+                            child: Hero(
+                                tag: thisDay.toString(),
+                                child: InkWell(
+                                  child: Align(
+                                      alignment: Alignment.topCenter,
+                                      child: Column(children: <Widget>[
+                                        Stack(children: <Widget>[
+                                          Container(
+                                              width: 24,
+                                              height: 24,
+                                              child: MaterialButton(
+                                                elevation: 0,
+                                                shape: CircleBorder(
+                                                    side: BorderSide(
+                                                        color: circlecolor,
+                                                        style:
+                                                            BorderStyle.solid)),
+                                                color: circlecolor,
+                                                onPressed: () {},
+                                              )),
+                                          Positioned(
+                                            child: Container(
+                                              child: Text(
+                                                ' ${thisDay.day}',
+                                                style: TextStyle(color: color),
+                                                textAlign: TextAlign.center,
+                                              ),
+                                            ),
+                                          ),
+                                        ]),
+                                        Container(
+                                            child: Expanded(child:ListView.builder(
+                                              itemCount: list.length,
+                                              itemBuilder:
+                                                  (BuildContext context,
+                                                  int plans) {
+                                                return Container(
+                                                  color: chageColor(list[plans].color),
+                                                  child:Text(list[plans].plan),
+                                                );
+                                              },
+                                            )))
+                                      ])),
+                                  onTap: () {
+                                    setState(() {
+                                      selected = thisDay;
+                                    });
+                                  },
+                                )));
+                      }
+                    })))),
+      Container(
+        height: 40,
+        color: Colors.grey[300],
+        child: Padding(
+          padding: EdgeInsets.only(left: 10, right: 10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(
+                "${selected.month}月${selected.day}日(${_listweek[selected.weekday]})",
+                style: TextStyle(fontSize: 17),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ]);
+  }
+
   void operate() async {
     final Future<Database> database = openDatabase(
       path.join(await getDatabasesPath(), 'calender4.db'),
@@ -103,24 +716,6 @@ class _CalendarBaseState extends State<CalenderBase> {
     return reconvertedColor;
   }
 
-  void _selectLeftIcon() {
-    setState(() {
-      _1st = _beforeEnd.subtract(Duration(days: _beforeEnd.day - 1));
-      _beforeEnd = _1st.subtract(Duration(days: _1st.day));
-      _beginDay = _1st.subtract(Duration(days: _1st.weekday - 1));
-      _nextMonth = _1st.add(Duration(days: 40));
-    });
-  }
-
-  void _selectRightIcon() {
-    setState(() {
-      _1st = _nextMonth.subtract(Duration(days: _nextMonth.day - 1));
-      _nextMonth = _1st.add(Duration(days: 40));
-      _beginDay = _1st.subtract(Duration(days: _1st.weekday - 1));
-      _beforeEnd = _1st.subtract(Duration(days: _1st.day));
-    });
-  }
-
   DateTime selected = _now;
 
   Widget _createCalendar(BuildContext context) {
@@ -144,362 +739,39 @@ class _CalendarBaseState extends State<CalenderBase> {
       'Nov', //ember',
       'Dec', //ember'
     ];
-    return Column(children: <Widget>[
-      /*Center(
-        child: Row(
-          children: <Widget>[
-            Expanded(
-              child: FloatingActionButton(
-                backgroundColor: Colors.transparent,
-                elevation: 0.0,
-                heroTag: 'leftbotton',
-                child: Icon(
-                  Icons.arrow_left,
-                  color: Colors.blue,
-                  size: 30,
-                ),
-                onPressed: () {
-                  _selectLeftIcon();
-                },
-              ),
-            ),
-            Expanded(
-              child: Center(
-                child: Text(
-                  '${_1st.year}/${_listmonth[_1st.month - 1]} ${_1st.month}',
-                  style: TextStyle(
-                    fontSize: 19,
-                  ),
-                ),
-              ),
-            ),
-            Expanded(
-              child: FloatingActionButton(
-                backgroundColor: Colors.transparent,
-                elevation: 0.0,
-                heroTag: 'rightbutton',
-                child: Icon(
-                  Icons.arrow_right,
-                  color: Colors.blue,
-                  size: 30,
-                ),
-                onPressed: () {
-                  _selectRightIcon();
-                },
-              ),
-            ),
-          ],
-        ),
-      ),*/
-      Padding(
-          padding: EdgeInsets.only(bottom: 3),
-          child: SizedBox(
-              height: 25,
-              child: GridView.count(
-                  crossAxisCount: 7,
-                  children: List.generate(7, (index) {
-                    return Container(
-                      color: Colors.white,
-                      child: Text(
-                        _listweek[index],
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 10,
-                        ),
-                      ),
-                    );
-                  })))),
-      if ((_beginDay.add(Duration(days: 35))).month != _1st.month)
-        Padding(
-            padding: EdgeInsets.only(right: 2, left: 2),
-            child: SizedBox(
-                height: 450,
-                child: GridView.count(
-                    crossAxisCount: 7,
-                    mainAxisSpacing: 3,
-                    crossAxisSpacing: 3.0,
-                    // 縦スペース
-                    // 横スペース
-                    childAspectRatio: 53 / 84,
-                    children: List.generate(35, (index) {
-                      final thisDay = _beginDay.add(Duration(days: index - 1));
-                      if (thisDay.month !=
-                          (_beginDay.add(Duration(days: 7))).month) {
-                        color = Colors.grey;
-                      } else {
-                        color = Colors.black;
-                      }
-                      if (_now == thisDay) {
-                        circlecolor = Color(0xFFA0C6F2);
-                        color = Colors.white;
-                        backcolor = Colors.white;
-                        if (selected == thisDay)
-                          selectedcolor = Color(0xFFA0C6F2);
-                        else
-                          selectedcolor = Colors.white;
-                      } else {
-                        circlecolor = Colors.white;
-                        if (selected == thisDay)
-                          selectedcolor = Color(0xFFA0C6F2);
-                        else
-                          selectedcolor = Colors.white;
-                      }
-                      backcolor = Colors.white;
-                      if (thisDay.day < 10) {
-                        if (thisDay.month !=
-                            (_beginDay.add(Duration(days: 7))).month) {
-                          return Container(
-                              decoration: BoxDecoration(
-                                color: backcolor,
-                                border: Border.all(color: selectedcolor),
-                                borderRadius: BorderRadius.circular(0),
-                              ),
-                              child: Hero(
-                                  tag: thisDay.toString(),
-                                  child: InkWell(
-                                    child: Align(
-                                      alignment: Alignment.topCenter,
-                                      child: Stack(children: <Widget>[
-                                        Container(
-                                            width: 24,
-                                            height: 24,
-                                            child: MaterialButton(
-                                              elevation: 0,
-                                              shape: CircleBorder(
-                                                  side: BorderSide(
-                                                      color: circlecolor,
-                                                      style:
-                                                          BorderStyle.solid)),
-                                              color: circlecolor,
-                                              onPressed: () {},
-                                            )),
-                                        Positioned(
-                                          child: Container(
-                                            child: Text(
-                                              '  ${thisDay.day}',
-                                              style: TextStyle(color: color),
-                                              textAlign: TextAlign.center,
-                                            ),
-                                          ),
-                                        ),
-                                      ]),
-                                    ),
-                                    onTap: () {
-                                      setState(() {
-                                        selected = thisDay;
-                                      });
-                                    },
-                                  )));
-                        } else {
-                          List<CalenderData> list = map[thisDay.day];
-                          if (list != null) {
-                            print("b");
-                            print(thisDay.day);
-                            return Container(
-                                decoration: BoxDecoration(
-                                  color: backcolor,
-                                  border: Border.all(color: selectedcolor),
-                                  borderRadius: BorderRadius.circular(0),
-                                ),
-                                child: Hero(
-                                    tag: thisDay.toString(),
-                                    child: InkWell(
-                                      child: Align(
-                                          alignment: Alignment.topCenter,
-                                          child: /*Row(
-                                            children: <Widget>[*/
-                                              Stack(children: <Widget>[
-                                                Container(
-                                                    width: 24,
-                                                    height: 24,
-                                                    child: MaterialButton(
-                                                      elevation: 0,
-                                                      shape: CircleBorder(
-                                                          side: BorderSide(
-                                                              color:
-                                                                  circlecolor,
-                                                              style: BorderStyle
-                                                                  .solid)),
-                                                      color: circlecolor,
-                                                      onPressed: () {},
-                                                    )),
-                                                Positioned(
-                                                  child: Container(
-                                                    child: Text(
-                                                      '  ${thisDay.day}',
-                                                      style: TextStyle(
-                                                          color: color),
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ]),
-                                              /*Container(
-                                                  child: ListView.builder(
-                                                itemCount: list.length,
-                                                itemBuilder:
-                                                    (BuildContext context,
-                                                        int index) {
-                                                  return Container(
-                                                      color: chageColor(
-                                                          list[index].color));
-                                                },
-                                              ))*/
-                                            /*],
-                                          )*/),
-                                      onTap: () {
-                                        setState(() {
-                                          selected = thisDay;
-                                        });
-                                      },
-                                    )));
-                          } else {
-                            return Container(
-                                decoration: BoxDecoration(
-                                  color: backcolor,
-                                  border: Border.all(color: selectedcolor),
-                                  borderRadius: BorderRadius.circular(0),
-                                ),
-                                child: Hero(
-                                    tag: thisDay.toString(),
-                                    child: InkWell(
-                                      child: Align(
-                                          alignment: Alignment.topCenter,
-                                          child: Stack(children: <Widget>[
-                                                Container(
-                                                    width: 24,
-                                                    height: 24,
-                                                    child: MaterialButton(
-                                                      elevation: 0,
-                                                      shape: CircleBorder(
-                                                          side: BorderSide(
-                                                              color:
-                                                                  circlecolor,
-                                                              style: BorderStyle
-                                                                  .solid)),
-                                                      color: circlecolor,
-                                                      onPressed: () {},
-                                                    )),
-                                                Positioned(
-                                                  child: Container(
-                                                    child: Text(
-                                                      '  ${thisDay.day}',
-                                                      style: TextStyle(
-                                                          color: color),
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ]),
-                                            ),
-                                      onTap: () {
-                                        setState(() {
-                                          selected = thisDay;
-                                        });
-                                      },
-                                    )));
-                          }
-                        }
-                      } else
-                        return Container(
-                            decoration: BoxDecoration(
-                              color: backcolor,
-                              border: Border.all(color: selectedcolor),
-                              borderRadius: BorderRadius.circular(0),
-                            ),
-                            child: Hero(
-                                tag: thisDay.toString(),
-                                child: InkWell(
-                                  child: Align(
-                                    alignment: Alignment.topCenter,
-                                    child: Stack(children: <Widget>[
-                                      Container(
-                                          width: 24,
-                                          height: 24,
-                                          child: MaterialButton(
-                                            elevation: 0,
-                                            shape: CircleBorder(
-                                                side: BorderSide(
-                                                    color: circlecolor,
-                                                    style: BorderStyle.solid)),
-                                            color: circlecolor,
-                                            onPressed: () {},
-                                          )),
-                                      Positioned(
-                                        child: Container(
-                                          child: Text(
-                                            ' ${thisDay.day}',
-                                            style: TextStyle(color: color),
-                                            textAlign: TextAlign.center,
-                                          ),
-                                        ),
-                                      ),
-                                    ]),
-                                  ),
-                                  onTap: () {
-                                    setState(() {
-                                      selected = thisDay;
-                                    });
-                                  },
-                                )));
-                    }))))
-      else
-        Padding(
-            padding: EdgeInsets.only(right: 2, left: 2),
-            child: SizedBox(
-                height: 350,
-                child: GridView.count(
-                    crossAxisCount: 7,
-                    mainAxisSpacing: 5,
-                    crossAxisSpacing: 5,
-                    padding: EdgeInsets.only(right: 5, left: 5),
-                    children: List.generate(42, (index) {
-                      final thisDay = _beginDay.add(Duration(days: index));
-                      if (thisDay.month !=
-                          (_beginDay.add(Duration(days: 7))).month) {
-                        color = Colors.grey;
-                      } else {
-                        color = Colors.black;
-                      }
-                      if (_now == thisDay) {
-                        backcolor = Colors.pink;
-                        color = Colors.white;
-                      } else
-                        backcolor = Colors.transparent;
-                      return Container(
-                          color: backcolor,
-                          child: Hero(
-                            tag: thisDay,
-                            child: InkWell(
-                                child: Align(
-                                  alignment: Alignment.topCenter,
-                                  child: Text(
-                                    '${thisDay.day}',
-                                    style: TextStyle(color: color),
-                                  ),
-                                ),
-                                onTap: () {}),
-                          ));
-                    })))),
-      Container(
-        height: 40,
-        color: Colors.grey[300],
-        child: Padding(
-          padding: EdgeInsets.only(left: 10, right: 10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Text(
-                "${selected.month}月${selected.day}日(${_listweek[selected.weekday]})",
-                style: TextStyle(fontSize: 17),
-              ),
-            ],
-          ),
-        ),
-      ),
-    ]);
+    final controller = PageController(
+      initialPage: 12,
+    );
+    return PageView(
+      controller: controller,
+      children: [
+        returnPage(-12),
+        returnPage(-11),
+        returnPage(-10),
+        returnPage(-9),
+        returnPage(-8),
+        returnPage(-7),
+        returnPage(-6),
+        returnPage(-5),
+        returnPage(-4),
+        returnPage(-3),
+        returnPage(-2),
+        returnPage(-1),
+        returnPage(0),
+        returnPage(1),
+        returnPage(2),
+        returnPage(3),
+        returnPage(4),
+        returnPage(5),
+        returnPage(6),
+        returnPage(7),
+        returnPage(8),
+        returnPage(9),
+        returnPage(10),
+        returnPage(11),
+        returnPage(12),
+      ],
+    );
   }
 
   void initState() {

@@ -49,6 +49,16 @@ class _CalenderAddState extends State<CalenderAdd> {
   Color(0xFF8BEBB7),
     Color(0xFFFFFB90),
   ];
+  String converterColor(Color beColor){
+    if(beColor==Color(0xFFA0C6F2))
+      return "0xFFA0C6F2";
+    if(beColor==Color(0xFFF0BBBA))
+      return "0xFFF0BBBA";
+    if(beColor==Color(0xFF8BEBB7))
+      return "0xFF8BEBB7";
+    if(beColor==Color(0xFFFFFB90))
+      return "0xFFFFFB90";
+  }
   int _colorHilight=0;
   void _updatePlan(String plan) {
     setState(() {
@@ -445,6 +455,7 @@ class _CalenderAddState extends State<CalenderAdd> {
                                 endTime:_endTime,
                                 endDay:_endDay,
                                 color:_color[_colorHilight].toString());
+                            print(_color[_colorHilight].toString());
                             Insertcalenderdata(calenderDate);
                             Navigator.pop(context);
                           }
