@@ -5,9 +5,13 @@ import 'package:path/path.dart' as path;
 import 'dart:async';
 import 'package:sqflite/sqflite.dart' as sqlite;
 class CalenderData{
+  final int number;
   final String id;
   final String plan;
   final int sday;
+  final int day;
+  final int month;
+  final int year;
   final int eday;
   final String startTime;
   final String startDay;
@@ -15,8 +19,12 @@ class CalenderData{
   final String endDay;
   final String color;
   CalenderData({
+    this.number,
     this.sday,
     this.eday,
+    this.day,
+    this.month,
+    this.year,
     this.id,
     this.plan,
     this.startTime,
@@ -27,6 +35,10 @@ class CalenderData{
   });
   Map<String,dynamic> toMap(){
     return {
+      'day':day,
+      'month':month,
+      'year':year,
+      'number':number,
       'id':id,
       'sday':sday,
       'eday':eday,

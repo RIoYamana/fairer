@@ -21,7 +21,7 @@ DateTime _beginDay =
     _1st.subtract(Duration(days: _1st.weekday - 1)); //カレンダーの最初の日
 
 class _CalendarBaseState extends State<CalenderBase> {
-  Map<int, List<CalenderData>> map;
+  Map<String, List<CalenderData>> map = new Map<String, List<CalenderData>>();
   int _counter = 0;
 
   Widget returnPage(int page) {
@@ -93,7 +93,7 @@ class _CalendarBaseState extends State<CalenderBase> {
                       ),
                     );
                   })))),
-      if ((beginDay.add(Duration(days: 35))).month != first.month)
+      if ((beginDay.add(Duration(days: 35))).month != first.month) //枠が大きい場合
         Padding(
             padding: EdgeInsets.only(right: 2, left: 2),
             child: SizedBox(
@@ -175,8 +175,14 @@ class _CalendarBaseState extends State<CalenderBase> {
                                     },
                                   )));
                         } else {
-                          if (map[thisDay.day] != null) {
-                            List<CalenderData> list = map[thisDay.day];
+                          if (map[(DateFormat.yMd())
+                                  .format(thisDay)
+                                  .toString()] !=
+                              null) {
+                            String key =
+                                (DateFormat.yMd()).format(thisDay).toString();
+                            List<CalenderData> list = List<CalenderData>();
+                            list = map[key];
                             return Container(
                                 decoration: BoxDecoration(
                                   color: backcolor,
@@ -285,7 +291,13 @@ class _CalendarBaseState extends State<CalenderBase> {
                                     )));
                           }
                         }
-                      } else
+                      } else //10以上
+                      if (map[(DateFormat.yMd()).format(thisDay).toString()] !=
+                          null) {
+                        String key =
+                            (DateFormat.yMd()).format(thisDay).toString();
+                        List<CalenderData> list = List<CalenderData>();
+                        list = map[key];
                         return Container(
                             decoration: BoxDecoration(
                               color: backcolor,
@@ -296,37 +308,106 @@ class _CalendarBaseState extends State<CalenderBase> {
                                 tag: thisDay.toString(),
                                 child: InkWell(
                                   child: Align(
-                                    alignment: Alignment.topCenter,
-                                    child: Stack(children: <Widget>[
-                                      Container(
-                                          width: 24,
-                                          height: 24,
-                                          child: MaterialButton(
-                                            elevation: 0,
-                                            shape: CircleBorder(
-                                                side: BorderSide(
-                                                    color: circlecolor,
-                                                    style: BorderStyle.solid)),
-                                            color: circlecolor,
-                                            onPressed: () {},
-                                          )),
-                                      Positioned(
-                                        child: Container(
-                                          child: Text(
-                                            ' ${thisDay.day}',
-                                            style: TextStyle(color: color),
-                                            textAlign: TextAlign.center,
-                                          ),
-                                        ),
-                                      ),
-                                    ]),
-                                  ),
+                                      alignment: Alignment.topCenter,
+                                      child: Column(
+                                        children: <Widget>[
+                                          Stack(children: <Widget>[
+                                            Container(
+                                                width: 24,
+                                                height: 24,
+                                                child: MaterialButton(
+                                                  elevation: 0,
+                                                  shape: CircleBorder(
+                                                      side: BorderSide(
+                                                          color: circlecolor,
+                                                          style: BorderStyle
+                                                              .solid)),
+                                                  color: circlecolor,
+                                                  onPressed: () {},
+                                                )),
+                                            Positioned(
+                                              child: Container(
+                                                child: Text(
+                                                  ' ${thisDay.day}',
+                                                  style:
+                                                      TextStyle(color: color),
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                              ),
+                                            ),
+                                          ]),
+                                          Container(
+                                              child: Expanded(
+                                                  child: ListView.builder(
+                                            itemCount: list.length,
+                                            itemBuilder: (BuildContext context,
+                                                int plans) {
+                                              print(list[plans].color);
+                                              return Padding(
+                                                  padding: EdgeInsets.only(
+                                                      bottom: 1),
+                                                  child: Container(
+                                                    // color: Colors.blueAccent,
+                                                    color: chageColor(
+                                                        list[plans].color),
+                                                    child: Text(
+                                                      list[plans].plan,
+                                                      style: TextStyle(
+                                                          color: Colors.white),
+                                                    ),
+                                                  ));
+                                            },
+                                          )))
+                                        ],
+                                      )),
                                   onTap: () {
                                     setState(() {
                                       selected = thisDay;
                                     });
                                   },
                                 )));
+                      }
+                      return Container(
+                          decoration: BoxDecoration(
+                            color: backcolor,
+                            border: Border.all(color: selectedcolor),
+                            borderRadius: BorderRadius.circular(0),
+                          ),
+                          child: Hero(
+                              tag: thisDay.toString(),
+                              child: InkWell(
+                                child: Align(
+                                  alignment: Alignment.topCenter,
+                                  child: Stack(children: <Widget>[
+                                    Container(
+                                        width: 24,
+                                        height: 24,
+                                        child: MaterialButton(
+                                          elevation: 0,
+                                          shape: CircleBorder(
+                                              side: BorderSide(
+                                                  color: circlecolor,
+                                                  style: BorderStyle.solid)),
+                                          color: circlecolor,
+                                          onPressed: () {},
+                                        )),
+                                    Positioned(
+                                      child: Container(
+                                        child: Text(
+                                          ' ${thisDay.day}',
+                                          style: TextStyle(color: color),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ),
+                                  ]),
+                                ),
+                                onTap: () {
+                                  setState(() {
+                                    selected = thisDay;
+                                  });
+                                },
+                              )));
                     }))))
       else
         Padding(
@@ -451,8 +532,9 @@ class _CalendarBaseState extends State<CalenderBase> {
                                                   ),
                                                 ),
                                               ]),
-                                              Container(
-                                                  child: ListView.builder(
+                                              Expanded(
+                                                  child: Container(
+                                                      child: ListView.builder(
                                                 itemCount: list.length,
                                                 itemBuilder:
                                                     (BuildContext context,
@@ -461,9 +543,13 @@ class _CalendarBaseState extends State<CalenderBase> {
                                                       color: chageColor(
                                                           list[plans].color),
                                                       child: Text(
-                                                          list[plans].plan));
+                                                        list[plans].plan,
+                                                        style: TextStyle(
+                                                            color:
+                                                                Colors.white),
+                                                      ));
                                                 },
-                                              ))
+                                              )))
                                             ],
                                           )),
                                       onTap: () {
@@ -517,7 +603,9 @@ class _CalendarBaseState extends State<CalenderBase> {
                                     )));
                           }
                         }
-                      } else if (map[thisDay.day] == null) {
+                      } else if (map[
+                              (DateFormat.yMd()).format(thisDay).toString()] ==
+                          null) {
                         return Container(
                             decoration: BoxDecoration(
                               color: backcolor,
@@ -560,7 +648,9 @@ class _CalendarBaseState extends State<CalenderBase> {
                                   },
                                 )));
                       } else {
-                        List<CalenderData> list = map[thisDay.day];
+                        String key =
+                            (DateFormat.yMd()).format(thisDay).toString();
+                        List<CalenderData> list = map[key];
                         return Container(
                             decoration: BoxDecoration(
                               color: backcolor,
@@ -598,17 +688,22 @@ class _CalendarBaseState extends State<CalenderBase> {
                                           ),
                                         ]),
                                         Container(
-                                            child: Expanded(child:ListView.builder(
-                                              itemCount: list.length,
-                                              itemBuilder:
-                                                  (BuildContext context,
-                                                  int plans) {
-                                                return Container(
-                                                  color: chageColor(list[plans].color),
-                                                  child:Text(list[plans].plan),
-                                                );
-                                              },
-                                            )))
+                                            child: Expanded(
+                                                child: ListView.builder(
+                                          itemCount: list.length,
+                                          itemBuilder: (BuildContext context,
+                                              int plans) {
+                                            return Container(
+                                              color:
+                                                  chageColor(list[plans].color),
+                                              child: Text(
+                                                list[plans].plan,
+                                                style: TextStyle(
+                                                    color: Colors.white),
+                                              ),
+                                            );
+                                          },
+                                        )))
                                       ])),
                                   onTap: () {
                                     setState(() {
@@ -634,67 +729,128 @@ class _CalendarBaseState extends State<CalenderBase> {
           ),
         ),
       ),
+      _returnList(selected),
     ]);
   }
 
-  void operate() async {
-    final Future<Database> database = openDatabase(
-      path.join(await getDatabasesPath(), 'calender4.db'),
+  Widget _returnList(DateTime time) {
+    if (map[(DateFormat.yMd()).format(selected).toString()] != null) {
+      String key = (DateFormat.yMd()).format(selected).toString();
+      List<CalenderData> list = List<CalenderData>(map[key].length);
+      list = map[key];
+      return Expanded(
+          child: ListView.builder(
+        itemCount: list.length,
+        itemBuilder: (BuildContext context, int index) {
+          final item =list[index];
+          return Dismissible(
+              key:ObjectKey(list),
+            onDismissed: (direction){
+              setState(() {
+                (map[key]).removeAt(index);
+                _deleteCalenderData((list[index].year)*100000+(list[index].month)*1000+(list[index].day)*10+index);
+                list.removeAt(index);
+              });
+            },
+              child:Column(
+            children: <Widget>[
+              Container(
+              height: 40, child: InkWell(onTap: () {},
+              child: Row(
+                children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.only(left: 10),
+              child:Container(
+                    width: 10,
+                    color: chageColor(list[index].color),
+              )),
+                  Padding(
+                    padding: EdgeInsets.only(left: 10,right: 20),
+                    child:Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text(list[index].startTime),
+                      Text(list[index].endTime),
+                    ],
+                  ),),
+                  Text(list[index].plan,style: TextStyle(fontSize: 20),)
+                ],
+              )      )),
+            Divider()]));
+        },
+      ));
+    }
+    return Container();
+  }
+
+  Future<Database> database;
+
+  void _openDatabase() async {
+    database = openDatabase(
+      path.join(await getDatabasesPath(), 'calender6.db'),
       onCreate: (db, version) {
         return db.execute(
-          "CREATE TABLE calenderplan (id TEXT KEY, plan TEXT,startTime TEXT,sday INTEGER,eday INTEGER,startDay TEXT,endDay TEXT,endTime TEXT,color TEXT) ",
+          "CREATE TABLE calenderplan (id TEXT KEY,number INTEGER, plan TEXT,day INTEGER,month INTEGER,year INTEGER,startTime TEXT,sday INTEGER,eday INTEGER,startDay TEXT,endDay TEXT,endTime TEXT,color TEXT) ",
         );
       },
       version: 1,
     );
-    Future<void> insertCalenderData(CalenderData data) async {
-      final Database db = await database;
-      await db.insert(
-        'calenderplan',
-        data.toMap(),
-        conflictAlgorithm: ConflictAlgorithm.replace,
+  }
+  Future<void> _deleteCalenderData(int number) async {
+    final db = await database;
+    print("a");
+    print(number);
+    await db.delete(
+      'calenderplan',
+      where: "number = ?",
+      whereArgs: [number],
+    );
+  }
+  void _getCalenderData() async {
+    //_nextMonth.subtract(Duration(days: _nextMonth.day - 1));
+    //nextMonth = first.add(Duration(days: 31));
+    final Database db = await database;
+    /*final id = (DateFormat.yMd())
+          .format(time)
+          .toString();*/ //time.month.toString()+"/"+time.year.toString();
+    final List<Map<String, dynamic>> maps =
+        await db.query('calenderplan' /*,where:'id=?',whereArgs: [id]*/);
+    Map<String, List<CalenderData>> calenderDatas =
+        Map<String, List<CalenderData>>();
+    CalenderData calenderData;
+    for (int i = 0; i < maps.length; i++) {
+      calenderData = CalenderData(
+        number: maps[i]['number'],
+        day:maps[i]['day'],
+        month:maps[i]['month'],
+        year:maps[i]['year'],
+        id: maps[i]['id'],
+        sday: maps[i]['sday'],
+        eday: maps[i]['eday'],
+        plan: maps[i]['plan'],
+        startDay: maps[i]['startDay'],
+        startTime: maps[i]['startTime'],
+        endDay: maps[i]['endDay'],
+        endTime: maps[i]['endTime'],
+        color: maps[i]['color'],
       );
-    }
-
-    void _getCalenderData(DateTime time) async {
-      final Database db = await database;
-      final id = (DateFormat.yM())
-          .format(DateTime.now())
-          .toString(); //time.month.toString()+"/"+time.year.toString();
-      final List<Map<String, dynamic>> maps =
-          await db.query('calenderplan', where: 'id=?', whereArgs: [id]);
-      Map<int, List<CalenderData>> calenderDatas =
-          Map<int, List<CalenderData>>();
-      CalenderData calenderData;
-      for (int i = 0; i < maps.length; i++) {
-        calenderData = CalenderData(
-          id: maps[i]['id'],
-          sday: maps[i]['sday'],
-          eday: maps[i]['eday'],
-          plan: maps[i]['plan'],
-          startDay: maps[i]['startDay'],
-          startTime: maps[i]['startTime'],
-          endDay: maps[i]['endDay'],
-          endTime: maps[i]['endTime'],
-          color: maps[i]['color'],
-        );
-        if (calenderDatas[maps[i]['sday']] == null)
-          calenderDatas[maps[i]['sday']] = [];
-        (calenderDatas[maps[i]['sday']]).add(calenderData);
-        int k = 0;
-        while (maps[i]['eday'] - maps[i]['sday'] - k > 0) {
+      if (calenderDatas[maps[i]['id']] == null)
+        calenderDatas[maps[i]['id']] = [];
+      (calenderDatas[maps[i]['id']]).add(calenderData);
+      //number.add(maps[i]['sday']);
+      print(maps[i]['id']);
+      int k = 0;
+      /*while (maps[i]['eday'] - maps[i]['sday'] - k > 0) {
           k++;
           if (calenderDatas[maps[i]['sday'] + k] == null)
             calenderDatas[maps[i]['sday'] + k] = [];
-          (calenderDatas[maps[i]['sday'] + k]).add(calenderData);
-        }
-      }
-      map = calenderDatas;
-      print(map);
+          //number.add(maps[i]['sday'] + k);
+          else(calenderDatas[maps[i]['sday'] + k]).add(calenderData);
+        }*/
     }
 
-    await _getCalenderData(DateTime.now());
-    //deleteClass();
+    print(calenderDatas);
+    map = calenderDatas;
   }
 
   Color chageColor(String color) {
@@ -775,17 +931,27 @@ class _CalendarBaseState extends State<CalenderBase> {
   }
 
   void initState() {
-    operate();
+    /*for(int k=1;k<365;k++){
+      map[(DateFormat.yMd())
+          .format((DateTime.now().subtract(Duration(days: k)))).toString()]=null;
+      map[(DateFormat.yMd())
+          .format((DateTime.now().add(Duration(days: k)))).toString()]=null;
+      print((DateFormat.yMd())
+          .format((DateTime.now().subtract(Duration(days: k)))).toString());
+      print((DateFormat.yMd())
+          .format((DateTime.now().add(Duration(days: k)))).toString());
+    }*/
+    _openDatabase();
+    _getCalenderData();
     _counter = 1;
     selected = _now;
   }
 
   Widget build(BuildContext context) {
-    print(DateTime.now().month.toString() +
-        "/" +
-        DateTime.now().year.toString() +
-        "a");
-    if (_counter == 1) operate();
+    if (_counter == 1) {
+      _openDatabase();
+      _getCalenderData();
+    }
     return Scaffold(
       body: Column(
         children: <Widget>[
@@ -803,7 +969,7 @@ class _CalendarBaseState extends State<CalenderBase> {
         ),
         onPressed: () {
           Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => CalenderAdd()));
+              .push(MaterialPageRoute(builder: (context) => CalenderAdd(map: map,)));
         },
       ),
     );

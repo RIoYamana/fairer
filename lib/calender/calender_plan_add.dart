@@ -7,6 +7,8 @@ import 'package:sqflite/sqflite.dart' as sqlite;
 import 'calender_data.dart';
 
 class CalenderAdd extends StatefulWidget {
+  Map<String,List<CalenderData>> map=Map<String,List<CalenderData>>();
+  CalenderAdd({@required this.map});
   _CalenderAddState createState() => _CalenderAddState();
 }
 
@@ -89,7 +91,7 @@ class _CalenderAddState extends State<CalenderAdd> {
       _endDay = endDay;
     });
   }
-  var _id=(DateFormat.yM()).format(DateTime.now());
+  var _id=(DateFormat.yMd()).format(DateTime.now());
   Future<void> _selectstartDate(BuildContext context) async {
     final DateTime selected = await showDatePicker(
       context: context,
@@ -101,9 +103,8 @@ class _CalenderAddState extends State<CalenderAdd> {
       setState(() {
         _startselected = selected;
         _startDay = (DateFormat.Md()).format(selected);
-        _id=(DateFormat.yM()).format(selected);
+        _id=(DateFormat.yMd()).format(selected);
         _sday=(DateFormat.d()).format(selected);
-        print(_sday);
       });
       print(_id);
     }
@@ -121,11 +122,11 @@ class _CalenderAddState extends State<CalenderAdd> {
         if (_startselected.day > selected.day) {
           _startDay = (DateFormat.Md()).format(selected);
           _sday=(DateFormat.d()).format(selected);
+          _id=(DateFormat.yMd()).format(selected);
         }
         _endDay = (DateFormat.Md()).format(selected);
         _eday=(DateFormat.d()).format(selected);
       });
-      print(_endDay);
     }
   }
 
@@ -173,6 +174,7 @@ class _CalenderAddState extends State<CalenderAdd> {
   }
   void initState() {
     _init();
+    selected=DateTime.now();
     super.initState();
     _startTime = DateTime
         .now()
@@ -192,10 +194,10 @@ class _CalenderAddState extends State<CalenderAdd> {
 
   void _openDatabase() async {
     database = sqlite.openDatabase(
-      path.join(await sqlite.getDatabasesPath(), 'calender4.db'),
+      path.join(await sqlite.getDatabasesPath(), 'calender6.db'),
       onCreate: (db, version) {
         return db.execute(
-          "CREATE TABLE calenderplan(id INTEGER KEY,plan TEXT,startTime TEXT,startDay TEXT,endDay TEXT,endTime TEXT,color TEXT)",
+          "CREATE TABLE calenderplan (id TEXT KEY,number INTEGER, plan TEXT,day INTEGER,month INTEGER,year INTEGER,startTime TEXT,sday INTEGER,eday INTEGER,startDay TEXT,endDay TEXT,endTime TEXT,color TEXT) ",
         );
       },
       version: 1,
@@ -223,7 +225,7 @@ class _CalenderAddState extends State<CalenderAdd> {
 
   var _labelText;
   DateTime selectedDate = DateTime.now();
-
+DateTime selected=DateTime.now();
   Future<Null> _selectStartTime(BuildContext context) async {
     final TimeOfDay t = await showTimePicker(
       context: context,
@@ -231,10 +233,10 @@ class _CalenderAddState extends State<CalenderAdd> {
     );
     if (t != null) {
       var dt = _toDateTime(t);
+      selected=_toDateTime(t);
       setState(() {
         _startTime = (DateFormat.Hm()).format(dt);
       });
-      print(_startTime);
     }
   }
 
@@ -248,7 +250,6 @@ class _CalenderAddState extends State<CalenderAdd> {
       setState(() {
         _endTime = (DateFormat.Hm()).format(dt);
       });
-      print(_endTime);
     }
   }
 
@@ -442,20 +443,32 @@ class _CalenderAddState extends State<CalenderAdd> {
                         onPressed: () {
                           // バリデーションチェック
                           if (_formKey.currentState.validate()) {
+                            int _number;
+                            if(widget.map[_id]!=null){
+                              _number=selected.year*100000+selected.month*1000+selected.day*10+widget.map[_id].length;
+                            }
+                            else
+                              _number=selected.year*100000+selected.month*1000+selected.day*10;
+                            print(_number);
                             // 各フォームのonSavedに記述した処理を実行
                             // このsave()を呼び出さないと、onSavedは実行されないので注意
                             _formKey.currentState.save();
                             CalenderData calenderDate=CalenderData(
-                                id:_id,
+                                id:_id.toString(),
+                                number: _number,
                                 plan:_plan,
+                                
+                                day:selected.day,
+                                month:selected.month,
+                                year: selected.year,
                                 sday: int.parse(_sday),
                                 eday: int.parse(_eday),
                                 startTime:_startTime,
                                 startDay:_startDay,
                                 endTime:_endTime,
                                 endDay:_endDay,
-                                color:_color[_colorHilight].toString());
-                            print(_color[_colorHilight].toString());
+                                color:converterColor(_color[_colorHilight]));
+
                             Insertcalenderdata(calenderDate);
                             Navigator.pop(context);
                           }
