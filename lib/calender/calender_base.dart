@@ -819,6 +819,7 @@ class _CalendarBaseState extends State<CalenderBase> {
         Map<String, List<CalenderData>>();
     CalenderData calenderData;
     for (int i = 0; i < maps.length; i++) {
+      if(maps[i]['sday']==maps[i]['eday'])
       calenderData = CalenderData(
         number: maps[i]['number'],
         day:maps[i]['day'],
@@ -834,19 +835,71 @@ class _CalendarBaseState extends State<CalenderBase> {
         endTime: maps[i]['endTime'],
         color: maps[i]['color'],
       );
+      else
+        calenderData = CalenderData(
+          number: maps[i]['number'],
+          day:maps[i]['day'],
+          month:maps[i]['month'],
+          year:maps[i]['year'],
+          id: maps[i]['id'],
+          sday: maps[i]['sday'],
+          eday: maps[i]['eday'],
+          plan: maps[i]['plan'],
+          startDay: maps[i]['startDay'],
+          startTime: maps[i]['startTime'],
+          endDay: maps[i]['endDay'],
+          endTime: '↓',
+          color: maps[i]['color'],
+        );
       if (calenderDatas[maps[i]['id']] == null)
         calenderDatas[maps[i]['id']] = [];
       (calenderDatas[maps[i]['id']]).add(calenderData);
       //number.add(maps[i]['sday']);
       print(maps[i]['id']);
       int k = 0;
-      /*while (maps[i]['eday'] - maps[i]['sday'] - k > 0) {
-          k++;
-          if (calenderDatas[maps[i]['sday'] + k] == null)
-            calenderDatas[maps[i]['sday'] + k] = [];
-          //number.add(maps[i]['sday'] + k);
-          else(calenderDatas[maps[i]['sday'] + k]).add(calenderData);
-        }*/
+      while (maps[i]['eday'] - maps[i]['sday'] - k > 0) {
+          k++; //number.add(maps[i]['sday'] + k);
+          print(k);
+          if(maps[i]['eday'] - maps[i]['sday'] - k+1==1){
+            calenderData = CalenderData(
+              number: maps[i]['number'],
+              day:maps[i]['day'],
+              month:maps[i]['month'],
+              year:maps[i]['year'],
+              id: maps[i]['id'],
+              sday: maps[i]['sday'],
+              eday: maps[i]['eday'],
+              plan: maps[i]['plan'],
+              startDay: maps[i]['startDay'],
+              startTime: '↓',
+              endDay: maps[i]['endDay'],
+              endTime: maps[i]['endTime'],
+              color: maps[i]['color'],
+            );
+          }else{
+            calenderData = CalenderData(
+              number: maps[i]['number'],
+              day:maps[i]['day'],
+              month:maps[i]['month'],
+              year:maps[i]['year'],
+              id: maps[i]['id'],
+              sday: maps[i]['sday'],
+              eday: maps[i]['eday'],
+              plan: maps[i]['plan'],
+              startDay: maps[i]['startDay'],
+              startTime: '終日',
+              endDay: maps[i]['endDay'],
+              endTime: '',
+              color: maps[i]['color'],
+            );
+          }
+          String iid=(maps[i]['month']).toString()+'/'+(maps[i]['sday']+k).toString()+'/'+(maps[i]['year']).toString();
+          if (calenderDatas[iid] == null)
+            calenderDatas[iid] = [];
+          print('a');
+          print(iid);
+          (calenderDatas[iid]).add(calenderData);
+        }
     }
 
     print(calenderDatas);
