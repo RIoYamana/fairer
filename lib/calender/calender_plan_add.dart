@@ -468,9 +468,71 @@ DateTime selected=DateTime.now();
                                 endTime:_endTime,
                                 endDay:_endDay,
                                 color:converterColor(_color[_colorHilight]));
-
                             Insertcalenderdata(calenderDate);
-                            Navigator.pop(context);
+                            if(widget.map[_id]==null)
+                              widget.map[_id]=[];
+                            if(int.parse(_sday)==int.parse(_eday)){
+                              widget.map[_id].add(calenderDate);
+                            Navigator.of(context).pop(widget.map);
+                            }else{
+                              CalenderData calenderDate=CalenderData(
+                                  id:_id.toString(),
+                                  number: _number,
+                                  plan:_plan,
+                                  day:selected.day,
+                                  month:selected.month,
+                                  year: selected.year,
+                                  sday: int.parse(_sday),
+                                  eday: int.parse(_eday),
+                                  startTime:_startTime,
+                                  startDay:_startDay,
+                                  endTime:'↓',
+                                  endDay:_endDay,
+                                  color:converterColor(_color[_colorHilight]));
+                              widget.map[_id].add(calenderDate);
+                              int k=0;
+                              while ( int.parse(_eday)- int.parse(_sday) - k > 0) {
+                                k++; //number.add(maps[i]['sday'] + k);
+                                if(int.parse(_eday)- int.parse(_sday) - k+1==1){
+                                  calenderDate = CalenderData(
+                                      id:_id.toString(),
+                                      number: _number,
+                                      plan:_plan,
+                                      day:selected.day,
+                                      month:selected.month,
+                                      year: selected.year,
+                                      sday: int.parse(_sday),
+                                      eday: int.parse(_eday),
+                                      startTime:_startTime,
+                                      startDay:_startDay,
+                                      endTime:'↑',
+                                      endDay:_endDay,
+                                      color:converterColor(_color[_colorHilight]));
+                                }else{
+                                  calenderDate = CalenderData(
+                                      id:_id.toString(),
+                                      number: _number,
+                                      plan:_plan,
+                                      day:selected.day,
+                                      month:selected.month,
+                                      year: selected.year,
+                                      sday: int.parse(_sday),
+                                      eday: int.parse(_eday),
+                                      startTime:'終日',
+                                      startDay:_startDay,
+                                      endTime:'',
+                                      endDay:_endDay,
+                                      color:converterColor(_color[_colorHilight]));
+                                }
+                                String iid=(selected.month).toString()+'/'+(int.parse(_sday)+k).toString()+'/'+(selected.year).toString();
+                                if (widget.map[iid] == null)
+                                  widget.map[iid] = [];
+                                print(iid);
+                                (widget.map[iid]).add(calenderDate);
+                              }
+                              Navigator.of(context).pop(widget.map);
+                            }
+
                           }
                         },
                         child: Text(

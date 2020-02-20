@@ -62,7 +62,7 @@ class _ClassAttendanceState extends State<ClassAttendance> {
             child: Text(
               "出席状況(タップで+1,長押しでリセットします)",
               style: TextStyle(fontSize: 14),
-              
+
             ),
           ),
           Padding(

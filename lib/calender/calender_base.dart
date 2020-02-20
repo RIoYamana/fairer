@@ -1020,9 +1020,11 @@ class _CalendarBaseState extends State<CalenderBase> {
         child: Icon(
           Icons.add,
         ),
-        onPressed: () {
+        onPressed: () async{
+    final result = await
           Navigator.of(context)
               .push(MaterialPageRoute(builder: (context) => CalenderAdd(map: map,)));
+    map=result;
         },
       ),
     );
