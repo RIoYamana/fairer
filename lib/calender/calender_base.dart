@@ -857,6 +857,7 @@ class _CalendarBaseState extends State<CalenderBase> {
       //number.add(maps[i]['sday']);
       print(maps[i]['id']);
       int k = 0;
+      if(maps[i]['eday']>maps[i]['sday']){
       while (maps[i]['eday'] - maps[i]['sday'] - k > 0) {
           k++; //number.add(maps[i]['sday'] + k);
           print(k);
@@ -899,13 +900,123 @@ class _CalendarBaseState extends State<CalenderBase> {
           print('a');
           print(iid);
           (calenderDatas[iid]).add(calenderData);
+        }}
+      else{
+        {
+          int k=1;
+          while(maps[i]['sday']+k>=returnDays(maps[i]['month'])){
+            calenderData = CalenderData(
+                number: maps[i]['number'],
+                  day:maps[i]['day'],
+                  month:maps[i]['month'],
+                  year:maps[i]['year'],
+                  id: maps[i]['id'],
+                  sday: maps[i]['sday'],
+                  eday: maps[i]['eday'],
+                  plan: maps[i]['plan'],
+                  startDay: maps[i]['startDay'],
+                  startTime: '終日',
+                  endDay: maps[i]['endDay'],
+                  endTime: '',
+                  color: maps[i]['color'],);
+            String iid=(selected.month).toString()+'/'+(maps[i]['sday']+k).toString()+'/'+(selected.year).toString();
+            if (calenderDatas[iid] == null)
+              calenderDatas[iid] = [];
+            (calenderDatas[iid]).add(calenderData);
+            k++;
+          }
+          int r=1;
+          while(maps[i]['eday']>=r){
+            if(maps[i]['eday']==r){
+                  calenderData = CalenderData(
+                    number: maps[i]['number'],
+                    day:maps[i]['day'],
+                    month:maps[i]['month'],
+                    year:maps[i]['year'],
+                    id: maps[i]['id'],
+                    sday: maps[i]['sday'],
+                    eday: maps[i]['eday'],
+                    plan: maps[i]['plan'],
+                    startDay: maps[i]['startDay'],
+                    startTime: '↓',
+                    endDay: maps[i]['endDay'],
+                    endTime: maps[i]['eday'],
+                    color: maps[i]['color'],);
+            }else {
+              calenderData = CalenderData(
+                number: maps[i]['number'],
+                day:maps[i]['day'],
+                month:maps[i]['month'],
+                year:maps[i]['year'],
+                id: maps[i]['id'],
+                sday: maps[i]['sday'],
+                eday: maps[i]['eday'],
+                plan: maps[i]['plan'],
+                startDay: maps[i]['startDay'],
+                startTime: '終日',
+                endDay: maps[i]['endDay'],
+                endTime: '',
+                color: maps[i]['color'],);
+            }
+            String iid=(selected.month).toString()+'/'+r.toString()+'/'+(selected.year).toString();
+            if (calenderDatas[iid] == null)
+              calenderDatas[iid] = [];
+            print(iid);
+            (calenderDatas[iid]).add(calenderData);
+            r++;
+          }
         }
+      }
     }
 
     print(calenderDatas);
     map = calenderDatas;
   }
-
+  int returnDays(DateTime a){
+    int b;
+    switch(a.month){
+      case 1:
+        b=31;
+        break;
+      case 2:
+        if(a.year%4==0)
+          b=29;
+        else
+          b=28;
+        break;
+      case 3:
+        b=31;
+        break;
+      case 4:
+        b=30;
+        break;
+      case 5:
+        b=31;
+        break;
+      case 6:
+        b=30;
+        break;
+      case 7 :
+        b=31;
+        break;
+      case 8:
+        b=31;
+        break;
+      case 9:
+        b=30;
+        break;
+      case 10:
+        b=31;
+        break;
+      case 11:
+        b=30;
+        break;
+      case 12:
+        b=31;
+        break;
+    }
+    return b;
+  }
   Color chageColor(String color) {
     Color reconvertedColor;
     switch (color) {
@@ -1023,7 +1134,7 @@ class _CalendarBaseState extends State<CalenderBase> {
         onPressed: () async{
     final result = await
           Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => CalenderAdd(map: map,)));
+              .push(MaterialPageRoute(builder: (context) => CalenderAdd(map: map,firstSelected: selected,)));
     map=result;
         },
       ),

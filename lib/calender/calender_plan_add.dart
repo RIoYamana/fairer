@@ -8,7 +8,8 @@ import 'calender_data.dart';
 
 class CalenderAdd extends StatefulWidget {
   Map<String,List<CalenderData>> map=Map<String,List<CalenderData>>();
-  CalenderAdd({@required this.map});
+  DateTime firstSelected;
+  CalenderAdd({@required this.map,@required this.firstSelected});
   _CalenderAddState createState() => _CalenderAddState();
 }
 
@@ -22,6 +23,8 @@ class _CalenderAddState extends State<CalenderAdd> {
   var _plan = '';
   var _sday=(DateFormat.d()).format(DateTime.now());
   var _eday=(DateFormat.d()).format(DateTime.now());
+  var _startinf;
+  var _endinf;
   var _startTime = DateTime
       .now()
       .hour
@@ -101,6 +104,7 @@ class _CalenderAddState extends State<CalenderAdd> {
     );
     if (selected != null) {
       setState(() {
+        _startinf=selected;
         _startselected = selected;
         _startDay = (DateFormat.Md()).format(selected);
         _id=(DateFormat.yMd()).format(selected);
@@ -122,8 +126,10 @@ class _CalenderAddState extends State<CalenderAdd> {
         if (_startselected.day > selected.day) {
           _startDay = (DateFormat.Md()).format(selected);
           _sday=(DateFormat.d()).format(selected);
+          _startinf=selected;
           _id=(DateFormat.yMd()).format(selected);
         }
+        _endinf=selected;
         _endDay = (DateFormat.Md()).format(selected);
         _eday=(DateFormat.d()).format(selected);
       });
@@ -259,8 +265,57 @@ DateTime selected=DateTime.now();
         now.year, now.month, now.day,
         t.hour, t.minute);
   }
-
+  int returnDays(DateTime a){
+    int b;
+    switch(a.month){
+      case 1:
+        b=31;
+      break;
+      case 2:
+        if(a.year%4==0)
+          b=29;
+        else
+          b=28;
+        break;
+      case 3:
+        b=31;
+        break;
+      case 4:
+        b=30;
+        break;
+      case 5:
+        b=31;
+        break;
+      case 6:
+        b=30;
+        break;
+      case 7 :
+        b=31;
+        break;
+      case 8:
+        b=31;
+        break;
+      case 9:
+        b=30;
+        break;
+      case 10:
+        b=31;
+        break;
+      case 11:
+        b=30;
+        break;
+      case 12:
+        b=31;
+        break;
+    }
+    return b;
+  }
   Widget build(BuildContext context) {
+    _startselected = widget.firstSelected;
+    _startDay = (DateFormat.yMd()).format(widget.firstSelected);
+    _endDay = (DateFormat.yMd()).format(widget.firstSelected);
+    _startinf=widget.firstSelected;
+    _endinf=widget.firstSelected;
     return Scaffold(
         resizeToAvoidBottomPadding: true,
         body: Form(
@@ -457,7 +512,6 @@ DateTime selected=DateTime.now();
                                 id:_id.toString(),
                                 number: _number,
                                 plan:_plan,
-
                                 day:selected.day,
                                 month:selected.month,
                                 year: selected.year,
@@ -491,6 +545,7 @@ DateTime selected=DateTime.now();
                                   color:converterColor(_color[_colorHilight]));
                               widget.map[_id].add(calenderDate);
                               int k=0;
+                              if(int.parse(_eday)>int.parse(_sday)){
                               while ( int.parse(_eday)- int.parse(_sday) - k > 0) {
                                 k++; //number.add(maps[i]['sday'] + k);
                                 if(int.parse(_eday)- int.parse(_sday) - k+1==1){
@@ -529,6 +584,72 @@ DateTime selected=DateTime.now();
                                   widget.map[iid] = [];
                                 print(iid);
                                 (widget.map[iid]).add(calenderDate);
+                              }}else{
+                                if(_endinf.month!=_startinf.month){
+                                  int k=1;
+                                  while(int.parse(_sday)+k>=returnDays(_startinf)){
+                                      calenderDate = CalenderData(
+                                          id:_id.toString(),
+                                          number: _number,
+                                          plan:_plan,
+                                          day:selected.day,
+                                          month:selected.month,
+                                          year: selected.year,
+                                          sday: int.parse(_sday),
+                                          eday: int.parse(_eday),
+                                          startTime:'終日',
+                                          startDay:_startDay,
+                                          endTime:'',
+                                          endDay:_endDay,
+                                          color:converterColor(_color[_colorHilight]));
+                                    String iid=(selected.month).toString()+'/'+(int.parse(_sday)+k).toString()+'/'+(selected.year).toString();
+                                    if (widget.map[iid] == null)
+                                      widget.map[iid] = [];
+                                    print(iid);
+                                    (widget.map[iid]).add(calenderDate);
+                                  k++;
+                                  }
+                                  int r=1;
+                                  while(int.parse(_eday)>=r){
+                                    if(int.parse(_eday)==r){
+                                      calenderDate = CalenderData(
+                                          id:_id.toString(),
+                                          number: _number,
+                                          plan:_plan,
+                                          day:selected.day,
+                                          month:selected.month,
+                                          year: selected.year,
+                                          sday: int.parse(_sday),
+                                          eday: int.parse(_eday),
+                                          startTime:_startTime,
+                                          startDay:_startDay,
+                                          endTime:'↑',
+                                          endDay:_endDay,
+                                          color:converterColor(_color[_colorHilight]));
+                                    }else {
+                                      calenderDate = CalenderData(
+                                          id:_id.toString(),
+                                          number: _number,
+                                          plan:_plan,
+                                          day:selected.day,
+                                          month:selected.month,
+                                          year: selected.year,
+                                          sday: int.parse(_sday),
+                                          eday: int.parse(_eday),
+                                          startTime:'終日',
+                                          startDay:_startDay,
+                                          endTime:'',
+                                          endDay:_endDay,
+                                          color:converterColor(_color[_colorHilight]));
+                                    }
+                                    String iid=(selected.month).toString()+'/'+r.toString()+'/'+(selected.year).toString();
+                                    if (widget.map[iid] == null)
+                                      widget.map[iid] = [];
+                                    print(iid);
+                                    (widget.map[iid]).add(calenderDate);
+                                    r++;
+                                  }
+                                }
                               }
                               Navigator.of(context).pop(widget.map);
                             }
