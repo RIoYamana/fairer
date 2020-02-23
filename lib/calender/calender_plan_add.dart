@@ -25,20 +25,8 @@ class _CalenderAddState extends State<CalenderAdd> {
   var _eday=(DateFormat.d()).format(DateTime.now());
   var _startinf;
   var _endinf;
-  var _startTime = DateTime
-      .now()
-      .hour
-      .toString() + ":" + DateTime
-      .now()
-      .minute
-      .toString();
-  var _endTime = DateTime
-      .now()
-      .hour
-      .toString() + ":" + DateTime
-      .now()
-      .minute
-      .toString();
+  var _startTime = DateTime.now().hour.toString() + ":" + DateTime.now().minute.toString();
+  var _endTime = DateTime.now().hour.toString() + ":" + DateTime.now().minute.toString();
   var _startselected = DateTime.now();
   var _startDay = (DateFormat.yMd()).format(DateTime.now());
   var _endDay = (DateFormat.yMd()).format(DateTime.now());
@@ -311,6 +299,10 @@ DateTime selected=DateTime.now();
     return b;
   }
   Widget build(BuildContext context) {
+    _sday=(DateFormat.d()).format(widget.firstSelected);
+    _eday=(DateFormat.d()).format(widget.firstSelected);
+    _startTime = widget.firstSelected.hour.toString() + ":" + widget.firstSelected.minute.toString();
+    _endTime = widget.firstSelected.hour.toString() + ":" + widget.firstSelected.minute.toString();
     _startselected = widget.firstSelected;
     _startDay = (DateFormat.yMd()).format(widget.firstSelected);
     _endDay = (DateFormat.yMd()).format(widget.firstSelected);
