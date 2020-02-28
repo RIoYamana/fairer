@@ -261,6 +261,9 @@ class _TableState extends State<Table> with RouteAware{
                                 ),
                                 child: InkWell(
                                   onTap: () async{
+                                    print("a");
+                                    print(index);
+                                    print(widget.numberClass);
                                     //index%widget.numberWeek
                                     final result = await Navigator.of(context).push(
                                         MaterialPageRoute(
@@ -268,7 +271,7 @@ class _TableState extends State<Table> with RouteAware{
                                                 ClassePage(
                                                     index: 1,
                                                     numberClass:
-                                                    index ~/ widget.numberClass,
+                                                    index ~/ (widget.numberClass+1),
                                                     numberWeek: index %
                                                         widget.numberWeek)));
                                     if(result!=null)
@@ -296,7 +299,7 @@ class _TableState extends State<Table> with RouteAware{
                                                         data: map[
                                                         index.toString()],
                                                         numberClass: index ~/
-                                                            widget.numberClass,
+                                                            (widget.numberClass+1),
                                                         numberWeek: index %
                                                             widget
                                                                 .numberWeek)));
@@ -343,7 +346,7 @@ class _TableState extends State<Table> with RouteAware{
                                                           data: map[
                                                           index.toString()],
                                                           numberClass: index ~/
-                                                              widget.numberClass,
+                                                              (widget.numberClass+1),
                                                           numberWeek: index %
                                                               widget
                                                                   .numberWeek)));
