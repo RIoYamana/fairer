@@ -202,15 +202,21 @@ class _TableState extends State<Table> with RouteAware{
                       ),
                       Expanded(
                           flex: 111,
+                          child:Container(
+                            color:  Colors.black87,
                           child: GridView.count(
                             crossAxisCount: widget.numberWeek,
                             children: baseWeeks,
+                            crossAxisSpacing: 2.0,
+                            // 縦スペース
+                            mainAxisSpacing: 2.0,
                        //     crossAxisSpacing: 2.0,
                             // 縦スペース
                          //   mainAxisSpacing: 2.0,
                             // 横スペース
                             childAspectRatio: 1.5,
-                          ))
+
+                          )))
                     ],
                   ),
                 ),
